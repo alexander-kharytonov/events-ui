@@ -58,4 +58,10 @@ async function post(path, credentials) {
   });
 }
 
-export { apiRequest, post, get };
+async function remove(path) {
+  return apiRequest(path, {
+    method: "DELETE",
+  });
+}
+
+export { apiRequest, post, get, remove };
