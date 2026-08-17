@@ -1,30 +1,43 @@
 import { useEffect, useState } from "react";
 import { getEvents } from "@/api/events";
-import PagePlaceholder from "./PagePlaceholder";
+import Events from "@/components/Events";
 
 export default function HomePage() {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const eventsData = await getEvents();
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    }
-
-    fetchEvents();
-  }, []);
-
-  console.log("Fetched events:", events);
-
+  
   return (
-    <PagePlaceholder
-      eyebrow="Discover"
-      title="Events worth showing up for"
-      description="The event list will live here. Browse upcoming meetups, workshops, and community gatherings."
-    />
+    <Events />
   );
 }
+
+// return (
+//     <main className="app">
+//       <Header />
+//       <Hero />
+//       {selectedEventTitle && (
+//         <p className="event-stats">Last saved: {selectedEventTitle}</p>
+//       )}
+//    
+//       {hasPagination && (
+//         <div className="pagination">
+//           <button
+//             type="button"
+//             disabled={!canGoPrevious || isLoading}
+//             onClick={() => setPage((currentPage) => currentPage - 1)}
+//           >
+//             Previous
+//           </button>
+//           <span>
+//             Page {page} of {totalPages}
+//           </span>
+//           <button
+//             type="button"
+//             disabled={!canGoNext || isLoading}
+//             onClick={() => setPage((currentPage) => currentPage + 1)}
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
+//       <AddEventForm onAddEvent={handleAddEvent} />
+//     </main>
+//   );
