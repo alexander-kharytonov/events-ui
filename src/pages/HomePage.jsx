@@ -1,4 +1,4 @@
-import Events from "@/components/Events";
+import Events from "@/components/events";
 
 export default function HomePage() {
   return <Events />;
