@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { HiArrowRightOnRectangle, HiEnvelope, HiLockClosed, HiUserPlus } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "@/api/auth";
@@ -8,12 +9,14 @@ import { useAuth } from "@/context/useAuth";
 const tabs = [
   { label: "Sign in", value: "sign-in" },
   { label: "Sign up", value: "sign-up" },
-];
+] as const;
+
+type AuthTab = (typeof tabs)[number]["value"];
 
 export default function AuthPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [activeTab, setActiveTab] = useState("sign-in");
+  const [activeTab, setActiveTab] = useState<AuthTab>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,13 +24,13 @@ export default function AuthPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSignIn = activeTab === "sign-in";
 
-  const selectTab = (tab) => {
+  const selectTab = (tab: AuthTab) => {
     setActiveTab(tab);
     setError("");
     setMessage("");
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setMessage("");

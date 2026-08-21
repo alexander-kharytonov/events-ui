@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import type { ReactNode } from "react";
 import { useAuth } from "@/context/useAuth";
 import { Layout } from "@/layouts";
 import {
@@ -9,13 +10,17 @@ import {
   NotFoundPage,
 } from "@/pages";
 
-function ProtectedRoute({ children }) {
+type RouteGuardProps = {
+  children: ReactNode;
+};
+
+function ProtectedRoute({ children }: RouteGuardProps) {
   const { isAuthenticated } = useAuth();
 
   return isAuthenticated ? children : <Navigate to="/auth" replace />;
 }
 
-function GuestRoute({ children }) {
+function GuestRoute({ children }: RouteGuardProps) {
   const { isAuthenticated } = useAuth();
 
   return isAuthenticated ? <Navigate to="/" replace /> : children;

@@ -161,7 +161,9 @@ export default function CreateEventPage() {
 
             <div className="mt-7 space-y-5">
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Title *</span>
+                <span className="text-sm font-medium text-slate-700">
+                  Title *
+                </span>
                 <input
                   className={inputClassName}
                   name="title"
@@ -175,7 +177,9 @@ export default function CreateEventPage() {
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Description</span>
+                <span className="text-sm font-medium text-slate-700">
+                  Description
+                </span>
                 <textarea
                   className={`${inputClassName} min-h-32 resize-y`}
                   name="description"
@@ -188,7 +192,9 @@ export default function CreateEventPage() {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-700">Date and time *</span>
+                  <span className="text-sm font-medium text-slate-700">
+                    Date and time *
+                  </span>
                   <input
                     className={inputClassName}
                     type="datetime-local"
@@ -200,7 +206,9 @@ export default function CreateEventPage() {
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-700">Location *</span>
+                  <span className="text-sm font-medium text-slate-700">
+                    Location *
+                  </span>
                   <input
                     className={inputClassName}
                     name="location"
@@ -252,7 +260,9 @@ export default function CreateEventPage() {
 
             <div className="mt-6 space-y-3">
               {error && <FeedbackMessage>{error}</FeedbackMessage>}
-              {message && <FeedbackMessage type="success">{message}</FeedbackMessage>}
+              {message && (
+                <FeedbackMessage type="success">{message}</FeedbackMessage>
+              )}
             </div>
 
             <button
@@ -268,12 +278,17 @@ export default function CreateEventPage() {
           <aside className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-slate-950">Your events</h2>
+                <h2 className="text-xl font-bold text-slate-950">
+                  Your events
+                </h2>
                 <p className="mt-1 text-sm text-slate-500">
                   {events.length} {events.length === 1 ? "event" : "events"}
                 </p>
               </div>
-              <HiCalendarDays className="text-3xl text-brand-600" aria-hidden="true" />
+              <HiCalendarDays
+                className="text-3xl text-brand-600"
+                aria-hidden="true"
+              />
             </div>
 
             {deleteError && (
@@ -284,8 +299,12 @@ export default function CreateEventPage() {
 
             {events.length === 0 ? (
               <div className="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center">
-                <p className="font-medium text-slate-700">No events created yet</p>
-                <p className="mt-1 text-sm text-slate-500">Your first event will appear here.</p>
+                <p className="font-medium text-slate-700">
+                  No events created yet
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Your first event will appear here.
+                </p>
               </div>
             ) : (
               <ul className="mt-6 space-y-3">
@@ -300,10 +319,16 @@ export default function CreateEventPage() {
                           <h3 className="font-semibold text-slate-900 group-hover:text-brand-700">
                             {event.title}
                           </h3>
-                          <HiArrowRight className="mt-1 shrink-0 text-brand-600" aria-hidden="true" />
+                          <HiArrowRight
+                            className="mt-1 shrink-0 text-brand-600"
+                            aria-hidden="true"
+                          />
                         </div>
                         <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-                          <HiCalendarDays className="shrink-0" aria-hidden="true" />
+                          <HiCalendarDays
+                            className="shrink-0"
+                            aria-hidden="true"
+                          />
                           {formatDate(event.date)}
                         </p>
                         <p className="mt-1 flex items-center gap-2 text-sm text-slate-500">
@@ -319,7 +344,9 @@ export default function CreateEventPage() {
                           onClick={() => handleDelete(event)}
                         >
                           <HiTrash className="text-base" aria-hidden="true" />
-                          {deletingEventId === event.id ? "Deleting..." : "Delete"}
+                          {deletingEventId === event.id
+                            ? "Deleting..."
+                            : "Delete"}
                         </button>
                       </div>
                     </div>

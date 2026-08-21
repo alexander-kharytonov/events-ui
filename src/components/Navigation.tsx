@@ -1,17 +1,25 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { HiArrowLeftOnRectangle, HiArrowRightOnRectangle } from "react-icons/hi2";
+import {
+  HiArrowLeftOnRectangle,
+  HiArrowRightOnRectangle,
+} from "react-icons/hi2";
 import { useAuth } from "@/context/useAuth";
+import type { NavLinkRenderProps } from "react-router-dom";
 
 const getLinkClassName =
-  (mobile) =>
-  ({ isActive }) =>
+  (mobile: boolean) =>
+  ({ isActive }: NavLinkRenderProps) =>
     `block rounded-lg font-medium transition ${mobile ? "w-full px-4 py-3 text-base" : "px-3 py-2 text-sm"} ${
       isActive
         ? "bg-brand-50 text-brand-700"
         : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
     }`;
 
-export default function Navigation({ mobile = false }) {
+type NavigationProps = {
+  mobile?: boolean;
+};
+
+export default function Navigation({ mobile = false }: NavigationProps) {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const linkClassName = getLinkClassName(mobile);
@@ -42,7 +50,10 @@ export default function Navigation({ mobile = false }) {
                 className={`inline-flex items-center gap-2 rounded-lg font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 ${mobile ? "w-full px-4 py-3 text-left text-base" : "px-3 py-2 text-sm"}`}
                 onClick={handleLogout}
               >
-                <HiArrowLeftOnRectangle className="text-lg" aria-hidden="true" />
+                <HiArrowLeftOnRectangle
+                  className="text-lg"
+                  aria-hidden="true"
+                />
                 Log out
               </button>
             </li>
