@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import type { ReactElement } from "react";
 import {
   HiArrowRight,
   HiCalendarDays,
@@ -18,14 +19,35 @@ const compactDateFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: "short",
 });
 
-function formatDate(value, formatter = dateFormatter) {
+interface Event {
+  id: number;
+  date: string;
+  title: string;
+  description?: string | null;
+  location: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  organizerId: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+//? in TS optional properties are marked with a question mark, indicating that they may or may not be present in the object. In this case, the properties description, latitude, longitude, createdAt, and updatedAt are optional and can be either of their specified types or undefined.
+interface EventCardProps {
+  event: Event;
+  preview?: boolean;
+}
+
+function formatDate(
+  value: string | null | undefined,
+  formatter: Intl.DateTimeFormat = dateFormatter,
+): string {
   if (!value) return "Not specified";
 
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : formatter.format(date);
 }
 
-function getMapUrl(latitude, longitude) {
+function getMapUrl(latitude: number, longitude: number): string {
   const lat = Number(latitude);
   const lon = Number(longitude);
   const offset = 0.025;
@@ -36,7 +58,7 @@ function getMapUrl(latitude, longitude) {
   return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(`${lat},${lon}`)}`;
 }
 
-export default function EventCard({ event, preview }) {
+export default function EventCard({ event, preview }: EventCardProps): ReactElement {
   const hasCoordinates =
     event.latitude !== null &&
     event.latitude !== undefined &&
@@ -50,10 +72,10 @@ export default function EventCard({ event, preview }) {
           <div className="pointer-events-none absolute inset-0 -m-12.5">
             <iframe
               className="h-full w-full border-0"
-              src={getMapUrl(event.latitude, event.longitude)}
+              src={getMapUrl(event.latitude!, event.longitude!)}
               title={`Map showing ${event.location}`}
               loading="lazy"
-              tabIndex="-1"
+              tabIndex={-1}
             />
           </div>
         )}
