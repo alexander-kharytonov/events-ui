@@ -1,3 +1,4 @@
+import { Event } from "@/types";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEvent } from "@/api/events";
 import { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import FeedbackMessage from "@/components/FeedbackMessage";
 export default function EventDetailsPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const [event, setEvent] = useState(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,15 +18,17 @@ export default function EventDetailsPage() {
 
     async function fetchEvent() {
       try {
-        const eventData = await getEvent(eventId);
+        const eventData = await getEvent(eventId!);
 
         if (!isCancelled) {
           setEvent(eventData);
         }
-      } catch (fetchError) {
-        if (!isCancelled) {
-          setError(fetchError.message || "Unable to load event.");
-        }
+      }catch (requestError: unknown) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to create the event.",
+      );
       } finally {
         if (!isCancelled) {
           setIsLoading(false);

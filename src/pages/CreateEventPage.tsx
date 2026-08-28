@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   HiArrowRight,
@@ -10,6 +10,15 @@ import {
 import { getProfile } from "@/api/auth";
 import { createEvent, deleteEvent, getEvents } from "@/api/events";
 import FeedbackMessage from "@/components/FeedbackMessage";
+import type { Event, UserProfile } from "@/types";
+
+// type FormState = {
+
+//   title: string;
+//   descroption: string;
+//   date: string;
+// }
+
 
 const initialForm = {
   title: "",
@@ -28,18 +37,18 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: "short",
 });
 
-function formatDate(value) {
+function formatDate(value: string | number) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : dateFormatter.format(date);
 }
 
 export default function CreateEventPage() {
   const [form, setForm] = useState(initialForm);
-  const [profile, setProfile] = useState(null);
-  const [events, setEvents] = useState([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingEventId, setDeletingEventId] = useState(null);
+  const [deletingEventId, setDeletingEventId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [message, setMessage] = useState("");
@@ -47,24 +56,39 @@ export default function CreateEventPage() {
   useEffect(() => {
     let isCancelled = false;
 
+// Promise.all([...]) liefert ein Array/Tupel mit den Ergebnissen beider Promises.
+// UserProfile beschreibt das Ergebnis von getProfile():
+
     async function loadPage() {
       try {
-        const [profileData, eventsData] = await Promise.all([
+        const [profileData, eventsData]: [UserProfile, Awaited<ReturnType<typeof getEvents>>] = await Promise.all([
           getProfile(),
           getEvents("?limit=1000"),
         ]);
 
+
+// ReturnType<typeof getEvents> ermittelt automatisch den Rückgabetyp der Funktion getEvents.
+// getEvents gibt Promise<EventsResponse> zurück.
+// Awaited<...> entfernt das Promise und ergibt direkt EventsResponse:
+     
+
         if (!isCancelled) {
+
+
           setProfile(profileData);
           setEvents(
             (eventsData.results ?? []).filter(
-              (event) => event.organizerId === profileData.id,
+              (event: { organizerId: number }) => event.organizerId === profileData.id,
             ),
           );
         }
-      } catch (requestError) {
+      } catch (requestError: unknown) {
         if (!isCancelled) {
-          setError(requestError.message || "Unable to load your events.");
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Unable to load your events.",
+          );
         }
       } finally {
         if (!isCancelled) setIsLoading(false);
@@ -77,21 +101,46 @@ export default function CreateEventPage() {
       isCancelled = true;
     };
   }, []);
-
-  const handleChange = ({ target }) => {
+//??Die Funktion aktualisiert den Formularzustand, sobald sich ein Eingabefeld ändert:
+  const handleChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((currentForm) => ({
       ...currentForm,
-      [target.name]: target.value,
+      [target.name as string]: target.value,
     }));
   };
-
-  const handleSubmit = async (submitEvent) => {
+//??
+  const handleSubmit = async (submitEvent: FormEvent<HTMLFormElement>) => {
     submitEvent.preventDefault();
     setError("");
     setMessage("");
     setIsSubmitting(true);
 
-    try {
+    //??Da profile laut Typ auch null sein kann, kann TypeScript hier einen Fehler melden. Außerdem steht await getProfile() momentan außerhalb des try-Blocks.
+
+    //ev:
+            //     try {
+            //   const profile = await getProfile();
+
+            //   if (!profile) {
+            //     throw new Error("User profile not found.");
+            //   }
+
+            //   const payload = {
+            //     // ...
+            //     organizerId: profile.id,
+            //   };
+
+            //   // ...
+            // } catch (requestError: unknown) {
+            //   // Fehlerbehandlung
+            // }
+
+      const profile: {
+        id: number;
+        email: string;
+        } | null = await getProfile();
+
+            try {
       const payload = {
         title: form.title.trim(),
         description: form.description.trim() || undefined,
@@ -106,14 +155,21 @@ export default function CreateEventPage() {
       setEvents((currentEvents) => [createdEvent, ...currentEvents]);
       setForm(initialForm);
       setMessage("Event created successfully.");
-    } catch (requestError) {
-      setError(requestError.message || "Unable to create the event.");
+    } catch (requestError: unknown) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to create the event.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
+// //event ist der Parameter der Funktion.
+// Event ist sein TypeScript-Typ.
+// Die Funktion erwartet also ein Event-Objekt mit der Struktur, die in types.ts definiert ist.
 
-  const handleDelete = async (event) => {
+  const handleDelete = async (event: Event) => {
     setDeleteError("");
     setDeletingEventId(event.id);
 
@@ -122,8 +178,12 @@ export default function CreateEventPage() {
       setEvents((currentEvents) =>
         currentEvents.filter((currentEvent) => currentEvent.id !== event.id),
       );
-    } catch (requestError) {
-      setDeleteError(requestError.message || "Unable to delete the event.");
+    } catch (requestError: unknown) {
+      setDeleteError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to delete the event.",
+      );
     } finally {
       setDeletingEventId(null);
     }
